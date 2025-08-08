@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+const { execSync } = require('child_process');
+
+console.log('TDD Guard Configuration');
+console.log('=======================\n');
+
+// Check environment variables
+const modelType = process.env.TDD_GUARD_MODEL_TYPE || process.env.MODEL_TYPE || 'cerebras';
+const cerebrasKey = process.env.TDD_GUARD_CEREBRAS_API_KEY || process.env.CEREBRAS_API_KEY;
+const anthropicKey = process.env.TDD_GUARD_ANTHROPIC_API_KEY;
+
+console.log('Configuration:');
+console.log(`  Model Type: ${modelType}`);
+console.log(`  Cerebras API Key: ${cerebrasKey ? '✓ Set' : '✗ Not set'}`);
+console.log(`  Anthropic API Key: ${anthropicKey ? '✓ Set' : '✗ Not set'}\n`);
+
+// Test actual routing with debug
+process.env.TDD_GUARD_DEBUG = '1';
+
+try {
+  const result = execSync('echo \'{"hook_event_name":"test"}\' | tdd-guard 2>&1', {
+    encoding: 'utf-8',
+    env: process.env
+  });
+  
+  const debugLines = result.split('\n').filter(line => line.includes('[TDD Guard]'));
+  
+  if (debugLines.length > 0) {
+    console.log('Active Model:');
+    debugLines.forEach(line => {
+      if (line.includes('Cerebras')) {
+        console.log('  ✓ Using Cerebras API (qwen-3-coder-480b)');
+        console.log('    Speed: ~2000 tokens/sec');
+        console.log('    Cost: $2/M tokens');
+      } else if (line.includes('Claude CLI')) {
+        console.log('  ✓ Using Claude CLI (sonnet)');
+      } else if (line.includes('Anthropic API')) {
+        console.log('  ✓ Using Anthropic API (claude-sonnet-4)');
+      }
+    });
+  }
+} catch (error) {
+  console.error('Error checking model:', error.message);
+}
+
+console.log('\nTo change model, set TDD_GUARD_MODEL_TYPE to:');
+console.log('  - "cerebras" for Cerebras API (default, fastest)');
+console.log('  - "anthropic_api" for Anthropic API');
+console.log('  - "claude_cli" for Claude CLI');

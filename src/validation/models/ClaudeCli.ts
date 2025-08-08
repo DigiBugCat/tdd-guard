@@ -9,6 +9,11 @@ export class ClaudeCli implements IModelClient {
 
   constructor(config?: Config) {
     this.config = config ?? new Config()
+
+    // Log to stderr to indicate Claude CLI is being used (won't interfere with JSON output)
+    if (process.env.TDD_GUARD_DEBUG) {
+      process.stderr.write('[TDD Guard] Using Claude CLI with sonnet model\n')
+    }
   }
 
   async ask(prompt: string): Promise<string> {

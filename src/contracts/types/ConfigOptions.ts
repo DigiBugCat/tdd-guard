@@ -3,6 +3,7 @@ export type ConfigOptions = {
   projectRoot?: string
   useSystemClaude?: boolean
   anthropicApiKey?: string
+  cerebrasApiKey?: string
   modelType?: string
   linterType?: string
 }

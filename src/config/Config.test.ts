@@ -229,6 +229,7 @@ describe('Config', () => {
 
     test('falls back to MODEL_TYPE env var in production mode', () => {
       process.env.MODEL_TYPE = 'anthropic_api'
+      delete process.env.TDD_GUARD_MODEL_TYPE
 
       const config = new Config()
 
@@ -247,19 +248,21 @@ describe('Config', () => {
     test('falls back to MODEL_TYPE in test mode when TEST_MODEL_TYPE is not set', () => {
       process.env.MODEL_TYPE = 'anthropic_api'
       delete process.env.TEST_MODEL_TYPE
+      delete process.env.TDD_GUARD_MODEL_TYPE
 
       const config = new Config({ mode: 'test' })
 
       expect(config.modelType).toBe('anthropic_api')
     })
 
-    test('defaults to claude_cli when no env vars are set', () => {
+    test('defaults to cerebras when no env vars are set', () => {
       delete process.env.MODEL_TYPE
       delete process.env.TEST_MODEL_TYPE
+      delete process.env.TDD_GUARD_MODEL_TYPE
 
       const config = new Config()
 
-      expect(config.modelType).toBe('claude_cli')
+      expect(config.modelType).toBe('cerebras')
     })
   })
 

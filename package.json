@@ -23,11 +23,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "tdd-guard": "dist/cli/tdd-guard.js"
+    "tdd-guard": "dist/cli/tdd-guard.js",
+    "tdd-guard-check": "bin/tdd-guard-check"
   },
   "files": [
     "dist",
     "!dist/*.tsbuildinfo",
+    "bin",
     "README.md",
     "LICENSE"
   ],
@@ -51,6 +53,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.57.0",
+    "@cerebras/cerebras_cloud_sdk": "^1.46.0",
     "@types/uuid": "^10.0.0",
     "dotenv": "^17.2.1",
     "minimatch": "^10.0.3",

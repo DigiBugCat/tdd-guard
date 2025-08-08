@@ -13,6 +13,7 @@ export class Config {
   readonly dataDir: string
   readonly useSystemClaude: boolean
   readonly anthropicApiKey: string | undefined
+  readonly cerebrasApiKey: string | undefined
   readonly modelType: string
   readonly linterType: string | undefined
 
@@ -22,6 +23,7 @@ export class Config {
     this.dataDir = this.getDataDir(options)
     this.useSystemClaude = this.getUseSystemClaude(options)
     this.anthropicApiKey = this.getAnthropicApiKey(options)
+    this.cerebrasApiKey = this.getCerebrasApiKey(options)
     this.modelType = this.getModelType(options, mode)
     this.linterType = this.getLinterType(options)
   }
@@ -47,12 +49,20 @@ export class Config {
     return options?.anthropicApiKey ?? process.env.TDD_GUARD_ANTHROPIC_API_KEY
   }
 
+  private getCerebrasApiKey(options?: ConfigOptions): string | undefined {
+    return (
+      options?.cerebrasApiKey ??
+      process.env.TDD_GUARD_CEREBRAS_API_KEY ??
+      process.env.CEREBRAS_API_KEY
+    )
+  }
+
   private getModelType(
     options: ConfigOptions | undefined,
     mode: string
   ): string {
     return (
-      options?.modelType ?? this.getEnvironmentModelType(mode) ?? 'claude_cli'
+      options?.modelType ?? this.getEnvironmentModelType(mode) ?? 'cerebras'
     )
   }
 
@@ -60,7 +70,7 @@ export class Config {
     if (mode === 'test' && process.env.TEST_MODEL_TYPE) {
       return process.env.TEST_MODEL_TYPE
     }
-    return process.env.MODEL_TYPE
+    return process.env.TDD_GUARD_MODEL_TYPE ?? process.env.MODEL_TYPE
   }
 
   get testResultsFilePath(): string {

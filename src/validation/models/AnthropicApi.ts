@@ -8,6 +8,14 @@ export class AnthropicApi implements IModelClient {
 
   constructor(config?: Config) {
     this.config = config ?? new Config()
+
+    // Log to stderr to indicate Anthropic API is being used (won't interfere with JSON output)
+    if (process.env.TDD_GUARD_DEBUG) {
+      process.stderr.write(
+        '[TDD Guard] Using Anthropic API with claude-sonnet-4 model\n'
+      )
+    }
+
     this.client = new Anthropic({
       apiKey: this.config.anthropicApiKey,
     })
