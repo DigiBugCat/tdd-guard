@@ -79,11 +79,15 @@ Use "block" for TDD violations, null for approval or insufficient information.`
       >[0]['response_format'],
     })
 
-    if (!response.choices || response.choices.length === 0) {
+    if (
+      !response.choices ||
+      !Array.isArray(response.choices) ||
+      response.choices.length === 0
+    ) {
       throw new Error('No choices returned from Cerebras API')
     }
 
-    const message = response.choices[0].message
+    const message = response.choices[0]?.message
     if (!message?.content) {
       throw new Error('No content in Cerebras API response')
     }
