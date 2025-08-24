@@ -10,11 +10,13 @@
 # - Node.js dependencies and build
 # - PHPUnit reporter dependencies
 # - pytest reporter dependencies
+# - Go reporter dependencies
+# - RSpec reporter dependencies
 #
 # REQUIREMENTS:
 # - Must be run from the workspace root
 # - Requires sudo access for firewall setup
-# - Node.js, PHP, and Python must be pre-installed
+# - Node.js, PHP, Python, Go, and Ruby must be pre-installed
 #
 # EXIT CODES:
 # - 0: Success
@@ -51,6 +53,16 @@ echo ""
 echo "🐍 Setting up Python environment for pytest reporter..."
 python3 -m venv reporters/pytest/.venv
 reporters/pytest/.venv/bin/pip install -e reporters/pytest pytest
+
+# 6. Download Go dependencies for Go reporter
+echo ""
+echo "🐹 Setting up Go reporter dependencies..."
+go mod download -C reporters/go
+
+# 7. Install Ruby/RSpec dependencies
+echo ""
+echo "💎 Installing RSpec reporter dependencies..."
+bundle install --gemfile=reporters/rspec/Gemfile
 
 echo ""
 echo "✅ Development environment setup complete!"

@@ -5,11 +5,11 @@
 [![Security](https://github.com/nizos/tdd-guard/actions/workflows/security.yml/badge.svg)](https://github.com/nizos/tdd-guard/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Automated TDD enforcement for Claude Code.
+Automated Test-Driven Development enforcement for Claude Code.
 
 ## Overview
 
-TDD Guard monitors file operations in real-time and blocks any changes that violate TDD principles. By analyzing test results, todos, and code changes, it ensures Claude Code follows the red-green-refactor cycle without manual reminders.
+TDD Guard ensures Claude Code follows Test-Driven Development principles. When your agent tries to skip tests or over-implement, TDD Guard blocks the action and explains what needs to happen instead—enforcing the red-green-refactor cycle automatically.
 
 <p align="center">
   <a href="https://nizar.se/uploads/videos/tdd-guard-demo.mp4">
@@ -19,21 +19,21 @@ TDD Guard monitors file operations in real-time and blocks any changes that viol
   <em>Click to watch TDD Guard in action</em>
 </p>
 
-## Why TDD Guard?
+## Features
 
-- **Focus on solving problems** - TDD Guard enforces the rules while you design solutions
-- **Save context for what matters** - No more TDD instructions cluttering your CLAUDE.md
-- **Works with your stack** - TypeScript, JavaScript, Python, and PHP today. More languages coming soon
-- **Control without context switches** - Toggle with `tdd-guard on/off` mid-session
-- **Flexible validation** - Use local Claude or configure Anthropic API
+- **Test-First Enforcement** - Blocks implementation without failing tests
+- **Minimal Implementation** - Prevents code beyond current test requirements
+- **Lint Integration** - Enforces refactoring using your linting rules
+- **Multi-Language Support** - TypeScript, JavaScript, Python, PHP, and Go
+- **Session Control** - Toggle on and off mid-session
+- **Configurable Validation** - Configure which files to validate with ignore patterns
+- **Flexible Validation** - Use local Claude or Anthropic API
 
 ## Requirements
 
 - Node.js 18+
-- Test Runner:
-  - JavaScript/TypeScript: Vitest or Jest
-  - Python: pytest
-  - PHP: PHPUnit 9.x, 10.x, 11.x, or 12.x
+- Claude Code or Anthropic API key
+- Test framework (Jest, Vitest, pytest, PHPUnit, or Go 1.24+)
 
 ## Quick Start
 
@@ -43,7 +43,7 @@ TDD Guard monitors file operations in real-time and blocks any changes that viol
 npm install -g tdd-guard
 ```
 
-### 2. Set Up Test Reporter
+### 2. Add Test Reporter
 
 TDD Guard needs to capture test results from your test runner. Choose your language below:
 
@@ -166,50 +166,57 @@ For PHPUnit 10.x/11.x/12.x, add to your `phpunit.xml`:
 
 </details>
 
+<details>
+<summary><b>Go</b></summary>
+
+Install the tdd-guard-go reporter:
+
+```bash
+go install github.com/nizos/tdd-guard/reporters/go/cmd/tdd-guard-go@latest
+```
+
+Pipe `go test -json` output to the reporter:
+
+```bash
+go test -json ./... 2>&1 | tdd-guard-go -project-root /Users/username/projects/my-app
+```
+
+For Makefile integration:
+
+```makefile
+test:
+	go test -json ./... 2>&1 | tdd-guard-go -project-root /Users/username/projects/my-app
+```
+
+**Note:** The reporter acts as a filter that passes test output through unchanged while capturing results for TDD Guard. See the [Go reporter configuration](reporters/go/README.md#configuration) for more details.
+
+</details>
+
 ### 3. Configure Claude Code Hook
 
 Use the `/hooks` command in Claude Code:
 
 1. Type `/hooks` in Claude Code
 2. Select `PreToolUse - Before tool execution`
-3. Choose `+ Add new matcher...`
-4. Enter: `Write|Edit|MultiEdit|TodoWrite`
-5. Select `+ Add new hook...`
-6. Enter command: `tdd-guard`
-7. Choose where to save (Project settings recommended)
+3. Choose `+ Add new matcher...` and enter: `Write|Edit|MultiEdit|TodoWrite`
+4. Select `+ Add new hook...` and enter: `tdd-guard`
+5. Choose where to save (Project settings recommended)
 
-**Tip:** Also configure:
+## Configuration
 
-- [Quick commands](docs/quick-commands.md) for `tdd-guard on/off`
-- [Ignore patterns](docs/ignore-patterns.md) to control which files are validated
-- [Session clearing](docs/session-clearing.md) for automatic cleanup on new sessions
-- [ESLint integration](docs/linting.md) for automated refactoring support
+**Quick Setup:**
 
-### 4. Configure AI Model (optional)
+- [Toggle commands](docs/quick-commands.md) - Enable/disable with `tdd-guard on/off`
+- [Session clearing](docs/session-clearing.md) - Automatic cleanup on new sessions
+- [Ignore patterns](docs/ignore-patterns.md) - Control which files are validated
 
-TDD Guard supports two AI models for validation:
+**Advanced:**
 
-#### Claude Code CLI (default)
+- [ESLint integration](docs/linting.md) - Automated refactoring support
+- [AI Models](docs/ai-model.md) - Switch between Claude CLI and Anthropic API
+- [All Settings](docs/configuration.md) - Complete configuration reference
 
-Uses your existing Claude Code authentication. No additional setup required.
-
-#### Anthropic HTTP API
-
-Direct API access provides faster validation.
-
-**Setup:**
-
-1. Get an Anthropic API key from [console.anthropic.com](https://console.anthropic.com/)
-   - **Note:** This is separate from Claude Code and requires Anthropic API credits
-   - Uses token-based billing instead of Claude Code subscription
-2. Set environment variables:
-
-```bash
-export TDD_GUARD_ANTHROPIC_API_KEY=your_api_key_here
-export MODEL_TYPE=anthropic_api
-```
-
-**Note:** TDD Guard uses the `TDD_GUARD_ANTHROPIC_API_KEY` environment variable (not the standard `ANTHROPIC_API_KEY`) to avoid conflicts with other Anthropic SDK usage in your project.
+**Note:** If TDD Guard can't find Claude, see [Claude Binary Setup](docs/claude-binary.md).
 
 ## Security Notice
 
@@ -221,20 +228,17 @@ We share this information for transparency. Please read the full [security consi
 
 TDD Guard runs with your user permissions and has access to your file system. We follow security best practices including automated security scanning, dependency audits, and test-driven development. Review the source code if you have security concerns.
 
-## Known Limitations
-
-- Not tested with multiple concurrent sessions in the same project
-
 ## Roadmap
 
 - Add support for more testing frameworks (Mocha, unittest, etc.)
-- Add support for additional programming languages (Go, Rust, Java, etc.)
+- Add support for additional programming languages (Ruby, Rust, Java, C#, etc.)
 - Encourage meaningful refactoring opportunities when tests are green
-- Add support for multiple concurrent subagents per project
+- Add support for multiple concurrent sessions per project
 
 ## Development
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for setup instructions and development guidelines.
+- [Development Guide](DEVELOPMENT.md) - Setup instructions and development guidelines
+- [Architecture Decision Records](docs/adr/) - Technical design decisions and rationale
 
 ## Contributing
 
@@ -244,11 +248,6 @@ Contributions are welcome! Feel free to submit issues and pull requests.
 
 - Python/pytest support: [@Durafen](https://github.com/Durafen)
 - PHP/PHPUnit support: [@wazum](https://github.com/wazum)
-
-## Learn More
-
-- [Configuration Guide](docs/configuration.md) - Environment variables, model options, and troubleshooting
-- [Architecture Decision Records](docs/adr/) - Technical design decisions and rationale
 
 ## License
 

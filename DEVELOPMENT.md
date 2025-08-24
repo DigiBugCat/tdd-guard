@@ -11,6 +11,8 @@
 - Node.js 18+ and npm
 - Python 3.8+ (for pytest reporter)
 - PHP 8.1+ and Composer (for PHPUnit reporter)
+- Go 1.21+ (for Go reporter)
+- Ruby 2.7+ and Bundler (for RSpec reporter)
 
 ## Using Dev Containers
 
@@ -58,6 +60,12 @@ composer install -d reporters/phpunit
 # Set up Python virtual environment and install pytest
 python3 -m venv reporters/pytest/.venv
 reporters/pytest/.venv/bin/pip install -e reporters/pytest pytest
+
+# Build Go reporter
+go build -C reporters/go ./cmd/tdd-guard-go
+
+# Install RSpec dependencies
+bundle install --gemfile=reporters/rspec/Gemfile
 ```
 
 ### Running Tests
@@ -96,3 +104,11 @@ If you get Python errors:
 
 - Ensure Python 3.8+ is installed: `python3 --version`
 - On some systems, you may need to install python3-venv: `sudo apt install python3-venv`
+
+### Ruby/RSpec Issues
+
+If you get Ruby errors:
+
+- Ensure Ruby 2.7+ is installed: `ruby --version`
+- Ensure Bundler is installed: `bundle --version`
+- If Bundler is missing: `gem install bundler`
